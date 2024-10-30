@@ -48,9 +48,9 @@ func main() {
 	var args []string
 	args = append(args, "commit", "-m")
 	if *scope != "" {
-		args = append(args, fmt.Sprintf("'%s(%s): %s'", *changeType, *scope, flag.Arg(0)))
+		args = append(args, fmt.Sprintf("%s(%s): %s", *changeType, *scope, flag.Arg(0)))
 	} else {
-		args = append(args, fmt.Sprintf("'%s: %s'", *changeType, flag.Args()[0]))
+		args = append(args, fmt.Sprintf("%s: %s", *changeType, flag.Args()[0]))
 	}
 
 	if flag.NArg() > 1 {
