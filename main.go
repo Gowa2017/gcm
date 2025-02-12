@@ -8,40 +8,41 @@ import (
 	"strings"
 )
 
-var types map[string]bool
+var types map[string]string
 var typeList string
 
 func init() {
-	types = make(map[string]bool)
-	types["build"] = true
-	types["ci"] = true
-	types["docs"] = true
-	types["feat"] = true
-	types["fix"] = true
-	types["perf"] = true
-	types["refactor"] = true
-	types["style"] = true
-	types["test"] = true
+	types = make(map[string]string)
+	types["feat"] = "新功能"
+	types["fix"] = "修复 bug"
+	types["docs"] = "文档注释"
+	types["style"] = "代码格式化（不影响运行时变动）"
+	types["refactor"] = "重够（即不增加新功能，也不是修复 Bug）"
+	types["perf"] = "性能优化"
+	types["test"] = "增加测试"
+	types["chore"] = "构建过程或辅助工具变动，如CICD修改，库升级"
+	types["revert"] = "回退"
+	types["build"] = "打包"
 
 	sl := make([]string, 0)
-	for k := range types {
-		sl = append(sl, k)
+	for k, v := range types {
+		sl = append(sl, fmt.Sprintf("%8s: %s", k, v))
 	}
 
-	typeList = strings.Join(sl, ",")
+	typeList = strings.Join(sl, "\n")
 }
 
 func main() {
-	var scope = flag.String("s", "", "scope, like modulea, moduleb")
-	var changeType = flag.String("t", "fix", fmt.Sprintf("change of type: %s", typeList))
+	var scope = flag.String("s", "", "影响范围，如：认证模块、学员模块、公共配置。不是必填，但是建议都进行描述")
+	var changeType = flag.String("t", "fix", fmt.Sprintf("变更类型，可选值:\n%s\n", typeList))
 	flag.Parse()
 
-	if !types[*changeType] {
+	if _, ok := types[*changeType]; !ok {
 		fmt.Printf("changeType must be in: %s\n", typeList)
 		return
 	}
 	if flag.NArg() < 1 {
-		fmt.Printf("Must specifiy the head")
+		fmt.Println("必须指定提交说明，如： gcm 修改用户认证时无法登录的问题")
 		return
 	}
 
