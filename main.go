@@ -54,15 +54,15 @@ func main() {
 	var cmd []string
 	cmd = append(cmd, "commit", "-m")
 	if *scope != "" {
-		cmd = append(cmd, fmt.Sprintf("%s(%s): %s", changeType, *scope, flag.Arg(0)))
+		cmd = append(cmd, fmt.Sprintf("%s(%s): %s", changeType, *scope, flag.Arg(1)))
 	} else {
-		cmd = append(cmd, fmt.Sprintf("%s: %s", changeType, flag.Args()[0]))
+		cmd = append(cmd, fmt.Sprintf("%s: %s", changeType, flag.Args()[1]))
 	}
 
 	if flag.NArg() > 2 {
 		cmd = append(cmd, flag.Args()[2:]...)
 	}
-	fmt.Println(strings.Join(cmd, " "))
+	// fmt.Println(strings.Join(cmd, " "))
 	if ret, err := exec.Command("git", cmd...).CombinedOutput(); err != nil {
 		fmt.Printf("%s\n", ret)
 		log.Fatal(err)
