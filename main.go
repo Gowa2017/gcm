@@ -62,7 +62,7 @@ func main() {
 	if flag.NArg() > 2 {
 		cmd = append(cmd, flag.Args()[2:]...)
 	}
-	fmt.Println(strings.Join(cmd, ""))
+	fmt.Println(strings.Join(cmd, " "))
 	if ret, err := exec.Command("git", cmd...).CombinedOutput(); err != nil {
 		fmt.Printf("%s\n", ret)
 		log.Fatal(err)
