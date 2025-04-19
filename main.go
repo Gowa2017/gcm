@@ -53,15 +53,18 @@ func init() {
 func main() {
 	var scope = flag.String("s", "", "影响范围，如：认证模块、学员模块、公共配置。不是必填，但是建议都进行描述")
 	var changeType = flag.String("t", "", types)
-	var opts = flag.String("g", "", "git Options. 不要指定 -，比如 git -a 你指定 a 就行了。")
 	var verbose = flag.Bool("v", false, "详细显示")
 
 	flag.Usage = func() {
-		fmt.Printf("Usage: %s [选项] header [body] \n", os.Args[0])
+		fmt.Printf("Usage: %s [选项] header [args...] \n", os.Args[0])
 		fmt.Println("选项:")
 		flag.PrintDefaults()
+		fmt.Println("变更类型:")
+		for k, v := range changeTypes {
+			fmt.Printf("%8s: %s\n", k, v.Description)
+		}
 		fmt.Println("参考地址: https://github.com/conventional-changelog/commitlint/#what-is-commitlint")
-		fmt.Println("参考:")
+		fmt.Println("参考格式:")
 		fmt.Println(`   <type>(<scope>): <short summary>
       │       │             │
       │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
@@ -76,6 +79,7 @@ func main() {
 	}
 	flag.Parse()
 	if flag.NArg() < 1 {
+		fmt.Println("未指定提交内容")
 		flag.Usage()
 		return
 	}
@@ -84,29 +88,23 @@ func main() {
 		fmt.Printf("变更类型必须是以下类型之一:\n%s\n", typeList)
 		return
 	}
+
 	header := flag.Arg(0)
-	body := ""
-	if flag.NArg() > 1 {
-		body = flag.Arg(1)
-	}
 	var cmd []string
 	cmd = append(cmd, "commit")
-	if *opts != "" {
-		cmd = append(cmd, "-"+*opts)
-	}
-
 	if *scope != "" {
 		cmd = append(cmd, "-m", fmt.Sprintf("%s(%s): %s", *changeType, *scope, header))
 	} else {
 		cmd = append(cmd, "-m", fmt.Sprintf("%s: %s", *changeType, header))
 	}
-
-	if body != "" {
-		cmd = append(cmd, "-m", body)
+	if flag.NArg() > 1 {
+		for _, arg := range flag.Args()[1:] {
+			cmd = append(cmd, arg)
+		}
 	}
 
 	if *verbose {
-		fmt.Printf("git %s\n",strings.Join(cmd, " "))
+		fmt.Printf("git %s\n", strings.Join(cmd, " "))
 	}
 	if ret, err := exec.Command("git", cmd...).CombinedOutput(); err != nil {
 		fmt.Printf("%s\n", ret)
