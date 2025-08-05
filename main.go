@@ -57,6 +57,7 @@ func main() {
 
 	flag.Usage = func() {
 		fmt.Printf("Usage: %s [选项] header [args...] \n", os.Args[0])
+		fmt.Printf("Example: %s -t fix 'update some thine' -m 'add a inteface and what, thisis body' main.go -a --amend\n", os.Args[0])
 		fmt.Println("选项:")
 		flag.PrintDefaults()
 		fmt.Println("变更类型:")
